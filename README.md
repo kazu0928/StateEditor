@@ -1,0 +1,2 @@
+# StateEditor
+StatePatternをノードベースで使用できるEditor拡張
