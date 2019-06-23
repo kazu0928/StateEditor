@@ -81,7 +81,7 @@ namespace CUEngine.Pattern
                     }
                 }
             }
-            if(stateProcessor.State!=null)
+            if (stateProcessor.State != null)
             {
                 stateProcessor.Execute();
             }

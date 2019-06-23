@@ -33,6 +33,7 @@ namespace CUEngine.Pattern
 
         private void WindowFunc(int id)
         {
+            Undo.RecordObject(stateMonobehavior,"StateUndo");
             EditorGUILayout.BeginHorizontal();
             //このノードをアクティブにする
             if (Event.current.button == 0 && Event.current.type == EventType.MouseDown)

@@ -138,13 +138,13 @@ namespace CUEngine.Pattern
         private void InitState()
         {
             EditorApplication.playModeStateChanged += OnChangedPlayMode;//プレイモードの変更時の処理
-                                                                        //フラグがtrueなら起動
+                                                                   //フラグがtrueなら起動
             if (initFlag == false)
             {
                 return;
             }
 
-
+            Undo.undoRedoPerformed += UndoCall;
             nowId = 0;//windowIDを初期化
                       //ノードがあればノードを一度初期化する
             if (nodes != null)
@@ -380,6 +380,11 @@ namespace CUEngine.Pattern
         //ノードの追加
         private void OnClickAddNode(Vector2 mousePosition)
         {
+            //Undo処理
+            if (stateMonobehaviors.Length > 0)
+            {
+                Undo.RecordObject(stateMonobehaviors[nowStateMonoNuber], "StateUndo");
+            }
             //ノード、ステート追加
             NomalState statePlus = new NomalState();
             states.Add(statePlus);
@@ -395,6 +400,11 @@ namespace CUEngine.Pattern
         //コピーしたステートのペースト
         private void OnClickPasteNode(Vector2 mousePosition)
         {
+            //Undo処理
+            if (stateMonobehaviors.Length > 0)
+            {
+                Undo.RecordObject(stateMonobehaviors[nowStateMonoNuber], "StateUndo");
+            }
             if (copyNode == null)
             {
                 return;
@@ -431,6 +441,11 @@ namespace CUEngine.Pattern
         //コピーしたステートのペースト(ネクストステート含め)
         private void OnClickPasteNodeAll(Vector2 mousePosition)
         {
+            //Undo処理
+            if (stateMonobehaviors.Length > 0)
+            {
+                Undo.RecordObject(stateMonobehaviors[nowStateMonoNuber], "StateUndo");
+            }
             if (copyNode == null)
             {
                 return;
@@ -471,6 +486,11 @@ namespace CUEngine.Pattern
 
             if (selectedOutPoint != null)
             {
+                //Undo処理
+                if (stateMonobehaviors.Length > 0)
+                {
+                    Undo.RecordObject(stateMonobehaviors[nowStateMonoNuber], "StateUndo");
+                }
                 //現在選択中の始点終点ノードがあればノード線を作成
                 if (selectedOutPoint.node != selectedInPoint.node)
                 {
@@ -503,6 +523,11 @@ namespace CUEngine.Pattern
 
             if (selectedInPoint != null)
             {
+                //Undo処理
+                if (stateMonobehaviors.Length > 0)
+                {
+                    Undo.RecordObject(stateMonobehaviors[nowStateMonoNuber], "StateUndo");
+                }
                 //現在選択中の始点終点ノードがあればノード線を作成
                 if (selectedOutPoint.node != selectedInPoint.node)
                 {
@@ -520,6 +545,11 @@ namespace CUEngine.Pattern
         {
             if (selectedOutPoint == null && selectedInPoint == null)
             {
+                //Undo処理
+                if (stateMonobehaviors.Length > 0)
+                {
+                    Undo.RecordObject(stateMonobehaviors[nowStateMonoNuber], "StateUndo");
+                }
                 connection.outPoint.myNextStateJudge.nextState = null;
                 connection.outPoint.myNextStateJudge.nextStateName = null;
                 connection.outPoint.myNextStateJudge.nextID = null;
@@ -564,6 +594,11 @@ namespace CUEngine.Pattern
         }
         private void OnClickRemoveNode(Node node)
         {
+            //Undo処理
+            if (stateMonobehaviors.Length > 0)
+            {
+                Undo.RecordObject(stateMonobehaviors[nowStateMonoNuber], "StateUndo");
+            }
             if (connections != null)
             {
                 List<NodeConnection> connectionsToRemove = new List<NodeConnection>();
@@ -604,6 +639,13 @@ namespace CUEngine.Pattern
             {
                 initFlag = true;
             }
+        }
+        void UndoCall()
+        {
+            initFlag = true;
+            EditorApplication.QueuePlayerLoopUpdate();
+            Repaint();
+            InitState();
         }
     }
 }

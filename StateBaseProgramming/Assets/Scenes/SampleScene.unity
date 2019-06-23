@@ -226,11 +226,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateName: Sample
   states:
-  - stateName: dw
+  - stateName: Sample1
     ID:
       number: 1
     nextStateJudge:
-    - nextStateName: asd
+    - nextStateName: "1\u30AD\u30FC"
       nextID:
         number: 2
       arg1:
@@ -239,34 +239,86 @@ MonoBehaviour:
         float_Arg: 0
         string_Arg: 
         bool_Arg: 0
-        enum_Arg: 274
+        enum_Arg: 257
         enum_Name: UnityEngine.KeyCode
         assembly_Name: UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
       arg2:
         object_Arg: {fileID: 0}
         int_Arg: 0
         float_Arg: 0
-        string_Arg: 
+        string_Arg: "1\u30AD\u30FC\u62BC\u3055\u308C\u305F"
         bool_Arg: 0
         enum_Arg: 1
         enum_Name: SampleStateScript+aa
         assembly_Name: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
       argMode: 2
       argType1: 5
-      argType2: 5
+      argType2: 3
       judgeFuncName: KeyCheck
       judgeFuncInstance: {fileID: 178371315}
       priority: 0
-      comment: 
-    execDelegate: []
-    playUpdateDelegate:
-    - actionName: KeyMan
-      instance: {fileID: 178371315}
+      comment: "\u518D\u751F\u4E2D\u306E\u30CE\u30FC\u30C9\u306F\u8D64\u304F\u306A\u308A\u307E\u3059"
+    - nextStateName: "2\u30AD\u30FC"
+      nextID:
+        number: 3
       arg1:
         object_Arg: {fileID: 0}
         int_Arg: 0
         float_Arg: 0
         string_Arg: 
+        bool_Arg: 0
+        enum_Arg: 258
+        enum_Name: UnityEngine.KeyCode
+        assembly_Name: UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      arg2:
+        object_Arg: {fileID: 0}
+        int_Arg: 0
+        float_Arg: 0
+        string_Arg: "2\u30AD\u30FC\u62BC\u3055\u308C\u305F"
+        bool_Arg: 0
+        enum_Arg: 0
+        enum_Name: 
+        assembly_Name: 
+      argMode: 2
+      argType1: 5
+      argType2: 3
+      judgeFuncName: KeyCheck
+      judgeFuncInstance: {fileID: 178371315}
+      priority: 0
+      comment: "\u623B\u308A\u5024bool"
+    execDelegate:
+    - actionName: StringDebugDraw
+      instance: {fileID: 178371315}
+      arg1:
+        object_Arg: {fileID: 0}
+        int_Arg: 0
+        float_Arg: 0
+        string_Arg: "\u30B9\u30BF\u30FC\u30C8"
+        bool_Arg: 0
+        enum_Arg: 0
+        enum_Name: 
+        assembly_Name: 
+      arg2:
+        object_Arg: {fileID: 0}
+        int_Arg: 0
+        float_Arg: 0
+        string_Arg: 
+        bool_Arg: 0
+        enum_Arg: 0
+        enum_Name: 
+        assembly_Name: 
+      argMode: 1
+      argType1: 3
+      argType2: 0
+      comment: "\u30B3\u30E1\u30F3\u30C8\u6B04\uFF1AStart()"
+    playUpdateDelegate:
+    - actionName: StringDebugDraw
+      instance: {fileID: 178371315}
+      arg1:
+        object_Arg: {fileID: 0}
+        int_Arg: 0
+        float_Arg: 0
+        string_Arg: "Sample1\u306B\u3044\u307E\u3059"
         bool_Arg: 0
         enum_Arg: 0
         enum_Name: SampleStateScript+aa
@@ -280,19 +332,131 @@ MonoBehaviour:
         enum_Arg: 1
         enum_Name: SampleStateScript+aa
         assembly_Name: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      argMode: 2
-      argType1: 5
+      argMode: 1
+      argType1: 3
       argType2: 5
-      comment: 
-    nodePosition: {x: 123, y: 145}
+      comment: Update()
+    nodePosition: {x: 433, y: 145}
     toggleWindow: 1
-  - stateName: asd
+  - stateName: "1\u30AD\u30FC"
     ID:
       number: 2
-    nextStateJudge: []
-    execDelegate: []
+    nextStateJudge:
+    - nextStateName: Sample1
+      nextID:
+        number: 1
+      arg1:
+        object_Arg: {fileID: 0}
+        int_Arg: 0
+        float_Arg: 0
+        string_Arg: 
+        bool_Arg: 0
+        enum_Arg: 282
+        enum_Name: UnityEngine.KeyCode
+        assembly_Name: UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      arg2:
+        object_Arg: {fileID: 0}
+        int_Arg: 0
+        float_Arg: 0
+        string_Arg: "F1\u62BC\u3055\u308C\u305F"
+        bool_Arg: 0
+        enum_Arg: 0
+        enum_Name: 
+        assembly_Name: 
+      argMode: 2
+      argType1: 5
+      argType2: 3
+      judgeFuncName: KeyCheck
+      judgeFuncInstance: {fileID: 178371315}
+      priority: 0
+      comment: "F1\u62BC\u3057\u305F\u3089\u623B\u308B"
+    execDelegate:
+    - actionName: StringDebugDraw
+      instance: {fileID: 178371315}
+      arg1:
+        object_Arg: {fileID: 0}
+        int_Arg: 0
+        float_Arg: 0
+        string_Arg: "1\u30AD\u30FC\u304C\u62BC\u3055\u308C\u305F"
+        bool_Arg: 0
+        enum_Arg: 0
+        enum_Name: 
+        assembly_Name: 
+      arg2:
+        object_Arg: {fileID: 0}
+        int_Arg: 0
+        float_Arg: 0
+        string_Arg: 
+        bool_Arg: 0
+        enum_Arg: 0
+        enum_Name: 
+        assembly_Name: 
+      argMode: 1
+      argType1: 3
+      argType2: 0
+      comment: "\u540C\u3058\u30B2\u30FC\u30E0\u30AA\u30D6\u30B8\u30A7\u30AF\u30C8\u306B\u8907\u6570\u4ED8\u3051\u308B\u3053\u3068\u3082\u53EF\u80FD"
     playUpdateDelegate: []
-    nodePosition: {x: 699, y: 158}
+    nodePosition: {x: 772, y: 356}
+    toggleWindow: 1
+  - stateName: "2\u30AD\u30FC"
+    ID:
+      number: 3
+    nextStateJudge:
+    - nextStateName: Sample1
+      nextID:
+        number: 1
+      arg1:
+        object_Arg: {fileID: 0}
+        int_Arg: 0
+        float_Arg: 0
+        string_Arg: 
+        bool_Arg: 0
+        enum_Arg: 282
+        enum_Name: UnityEngine.KeyCode
+        assembly_Name: UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      arg2:
+        object_Arg: {fileID: 0}
+        int_Arg: 0
+        float_Arg: 0
+        string_Arg: "F1\u62BC\u3055\u308C\u305F"
+        bool_Arg: 0
+        enum_Arg: 0
+        enum_Name: 
+        assembly_Name: 
+      argMode: 2
+      argType1: 5
+      argType2: 3
+      judgeFuncName: KeyCheck
+      judgeFuncInstance: {fileID: 178371315}
+      priority: 0
+      comment: "\u6761\u4EF6\u51E6\u7406\u306F\u5FC5\u305A\u7E4B\u3050\uFF08\u7E4B\u304C\u306A\u3044\u3068\u30A8\u30E9\u30FC\uFF09"
+    execDelegate:
+    - actionName: StringDebugDraw
+      instance: {fileID: 178371315}
+      arg1:
+        object_Arg: {fileID: 0}
+        int_Arg: 0
+        float_Arg: 0
+        string_Arg: "2\u30AD\u30FC\u304C\u62BC\u3055\u308C\u305F"
+        bool_Arg: 0
+        enum_Arg: 0
+        enum_Name: 
+        assembly_Name: 
+      arg2:
+        object_Arg: {fileID: 0}
+        int_Arg: 0
+        float_Arg: 0
+        string_Arg: 
+        bool_Arg: 0
+        enum_Arg: 0
+        enum_Name: 
+        assembly_Name: 
+      argMode: 1
+      argType1: 3
+      argType2: 0
+      comment: 
+    playUpdateDelegate: []
+    nodePosition: {x: 497, y: 557}
     toggleWindow: 1
 --- !u!4 &178371317
 Transform:
