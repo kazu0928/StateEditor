@@ -57,13 +57,22 @@ namespace CUEngine.Pattern
                         case ArgType.String:
                             type1 = typeof(string);
                             break;
+                        case ArgType.Enum:
+                            type1 = typeof(int);
+                            break;
                     }
 
                     Type type = typeof(ActionVoid<>).MakeGenericType(type1);
                     action = Activator.CreateInstance(type) as DelegateBase;
                     //delegate作成
-                    type.GetMethod("Init").Invoke(action, new object[] { instance, actionName, arg1.GetTypeArg(argType1) });
-
+                    if (argType1 == ArgType.Enum)
+                    {
+                        type.GetMethod("Init").Invoke(action, new object[] { instance, actionName, arg1.GetTypeArg(argType1),arg1.GetEnumType(),arg1.assembly_Name });
+                    }
+                    else
+                    {
+                        type.GetMethod("Init").Invoke(action, new object[] { instance, actionName, arg1.GetTypeArg(argType1),null,null });
+                    }
                 }
                 else if (argMode == ActionArgMode.Arg2)
                 {
@@ -86,6 +95,9 @@ namespace CUEngine.Pattern
                         case ArgType.String:
                             type1 = typeof(string);
                             break;
+                        case ArgType.Enum:
+                            type1 = typeof(int);
+                            break;
                     }
                     //二つ目の引数
                     Type type2 = typeof(object);
@@ -106,12 +118,26 @@ namespace CUEngine.Pattern
                         case ArgType.String:
                             type2 = typeof(string);
                             break;
+                        case ArgType.Enum:
+                            type2 = typeof(int);
+                            break;
                     }
 
                     Type type = typeof(ActionVoid<,>).MakeGenericType(type1, type2);
                     action = Activator.CreateInstance(type) as DelegateBase;
+                    string enum1 = null, enum2 = null, enumAs1 = null, enumAs2 = null;
+                    if (argType1 == ArgType.Enum)
+                    {
+                        enum1 = arg1.enum_Name;
+                        enumAs1 = arg1.assembly_Name;
+                    }
+                    if(argType2 == ArgType.Enum)
+                    {
+                        enum2 = arg2.enum_Name;
+                        enumAs2 = arg2.assembly_Name;
+                    }
                     //delegate作成
-                    type.GetMethod("Init").Invoke(action, new object[] { instance, actionName, arg1.GetTypeArg(argType1), arg2.GetTypeArg(argType2) });
+                    type.GetMethod("Init").Invoke(action, new object[] { instance, actionName, arg1.GetTypeArg(argType1), arg2.GetTypeArg(argType2), enum1, enum2, enumAs1, enumAs2 });
 
                 }
 
@@ -125,9 +151,7 @@ namespace CUEngine.Pattern
             public ArgType argType1;
             public ArgType argType2;
 
-#if UNITY_EDITOR
             public string comment;
-#endif
         }
         //ステートの名前
         public string stateName = null;
@@ -183,10 +207,8 @@ namespace CUEngine.Pattern
             }
         }
         /*ノードエディターで使用するプロパティ*/
-#if UNITY_EDITOR
         public Vector2 nodePosition = new Vector2(0, 0);
         public bool toggleWindow = true;
-#endif
 
         //ステート名を取得するメソッド
         public abstract string getStateName();

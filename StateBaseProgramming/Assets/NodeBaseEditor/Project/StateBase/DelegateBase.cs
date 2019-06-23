@@ -26,7 +26,7 @@ namespace CUEngine
         {
             func = (Func<bool>)obj.GetType().GetMethod(methodName, new Type[] { }).CreateDelegate(typeof(Func<bool>), obj);
         }
-
+        
         private Func<bool> func;
 
         public override bool Invoke()
@@ -41,10 +41,17 @@ namespace CUEngine
         private Func<T, bool> func;
         private T arg;
 
-        public void Init(UnityEngine.Object obj, string methodName, T ag)
+        public void Init(UnityEngine.Object obj, string methodName, T ag,string enumName = null,string assemblyName = null)
         {
             var type = typeof(T);
-            func = (Func<T, bool>)obj.GetType().GetMethod(methodName, new Type[] { type }).CreateDelegate(typeof(Func<T, bool>), obj);
+            if(enumName!=null)
+            {
+                func = (Func<T, bool>)obj.GetType().GetMethod(methodName, new Type[] { System.Reflection.Assembly.Load(assemblyName).GetType(enumName) }).CreateDelegate(typeof(Func<T, bool>), obj);
+            }
+            else
+            {
+                func = (Func<T, bool>)obj.GetType().GetMethod(methodName, new Type[] { type }).CreateDelegate(typeof(Func<T, bool>), obj);
+            }
             arg = ag;
         }
 
@@ -60,10 +67,18 @@ namespace CUEngine
         private T arg;
         private T2 arg2;
 
-        public void Init(UnityEngine.Object obj, string methodName, T ag, T2 ag2)
+        public void Init(UnityEngine.Object obj, string methodName, T ag, T2 ag2, string enumName1, string enumName2, string assemblyName1, string assemblyName2)
         {
             var type = typeof(T);
             var type2 = typeof(T2);
+            if (enumName1 != null)
+            {
+                type = System.Reflection.Assembly.Load(assemblyName1).GetType(enumName1);
+            }
+            if (enumName2 != null)
+            {
+                type2 = System.Reflection.Assembly.Load(assemblyName2).GetType(enumName2);
+            }
             func = (Func<T, T2, bool>)obj.GetType().GetMethod(methodName, new Type[] { type, type2 }).CreateDelegate(typeof(Func<T, T2, bool>), obj);
             arg = ag;
             arg2 = ag2;
@@ -105,10 +120,17 @@ namespace CUEngine
         private Action<T> func;
         private T arg;
 
-        public void Init(UnityEngine.Object obj, string methodName, T ag)
+        public void Init(UnityEngine.Object obj, string methodName, T ag,string enumName =null,string assemblyName = null)
         {
             var type = typeof(T);
-            func = (Action<T>)obj.GetType().GetMethod(methodName, new Type[] { type }).CreateDelegate(typeof(Action<T>), obj);
+            if (enumName != null)
+            {
+                func = (Action<T>)obj.GetType().GetMethod(methodName, new Type[] { System.Reflection.Assembly.Load(assemblyName).GetType(enumName) }).CreateDelegate(typeof(Action<T>), obj);
+            }
+            else
+            {
+                func = (Action<T>)obj.GetType().GetMethod(methodName, new Type[] { type }).CreateDelegate(typeof(Action<T>), obj);
+            }
             arg = ag;
         }
 
@@ -124,11 +146,18 @@ namespace CUEngine
         private T arg;
         private T2 arg2;
 
-        public void Init(UnityEngine.Object obj, string methodName, T ag, T2 ag2)
+        public void Init(UnityEngine.Object obj, string methodName, T ag, T2 ag2,string enumName1,string enumName2,string assemblyName1,string assemblyName2)
         {
             var type = typeof(T);
             var type2 = typeof(T2);
-
+            if(enumName1 != null)
+            {
+                type = System.Reflection.Assembly.Load(assemblyName1).GetType(enumName1);
+            }
+            if(enumName2!=null)
+            {
+                type2 = System.Reflection.Assembly.Load(assemblyName2).GetType(enumName2);
+            }
             func = (Action<T, T2>)obj.GetType().GetMethod(methodName, new Type[] { type, type2 }).CreateDelegate(typeof(Action<T, T2>), obj);
             arg = ag;
             arg2 = ag2;

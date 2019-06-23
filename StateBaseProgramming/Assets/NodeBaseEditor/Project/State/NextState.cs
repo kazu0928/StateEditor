@@ -29,6 +29,7 @@ namespace CUEngine.Pattern
         Float,
         String,
         Bool,
+        Enum,
     }
 
     [System.Serializable]
@@ -63,12 +64,22 @@ namespace CUEngine.Pattern
                     case ArgType.String:
                         type1 = typeof(string);
                         break;
+                    case ArgType.Enum:
+                        type1 = typeof(int);
+                        break;
                 }
 
                 Type type = typeof(FuncBool<>).MakeGenericType(type1);
                 judgeFunc = Activator.CreateInstance(type) as DelegateBoolBase;
                 //delegate作成
-                type.GetMethod("Init").Invoke(judgeFunc, new object[] { judgeFuncInstance, judgeFuncName, arg1.GetTypeArg(argType1) });
+                if(argType1==ArgType.Enum)
+                {
+                    type.GetMethod("Init").Invoke(judgeFunc, new object[] { judgeFuncInstance, judgeFuncName, arg1.GetTypeArg(argType1),arg1.GetEnumType(),arg1.assembly_Name });
+                }
+                else
+                {
+                    type.GetMethod("Init").Invoke(judgeFunc, new object[] { judgeFuncInstance, judgeFuncName, arg1.GetTypeArg(argType1),null,null });
+                }
             }
             else if (argMode == JudgeFuncArgMode.Arg2)
             {
@@ -91,6 +102,9 @@ namespace CUEngine.Pattern
                     case ArgType.String:
                         type1 = typeof(string);
                         break;
+                    case ArgType.Enum:
+                        type1 = typeof(int);
+                        break;
                 }
                 //二つ目の引数のタイプ（Typeがシリアル化不可のため）
                 Type type2 = typeof(object);
@@ -111,11 +125,25 @@ namespace CUEngine.Pattern
                     case ArgType.String:
                         type2 = typeof(string);
                         break;
+                    case ArgType.Enum:
+                        type2 = typeof(int);
+                        break;
                 }
                 Type type = typeof(FuncBool<,>).MakeGenericType(type1, type2);
                 judgeFunc = Activator.CreateInstance(type) as DelegateBoolBase;
+                string enum1 = null, enum2 = null, enumAs1 = null, enumAs2 = null;
+                if (argType1 == ArgType.Enum)
+                {
+                    enum1 = arg1.enum_Name;
+                    enumAs1 = arg1.assembly_Name;
+                }
+                if (argType2 == ArgType.Enum)
+                {
+                    enum2 = arg2.enum_Name;
+                    enumAs2 = arg2.assembly_Name;
+                }
                 //delegate作成
-                type.GetMethod("Init").Invoke(judgeFunc, new object[] { judgeFuncInstance, judgeFuncName, arg1.GetTypeArg(argType1), arg2.GetTypeArg(argType2) });
+                type.GetMethod("Init").Invoke(judgeFunc, new object[] { judgeFuncInstance, judgeFuncName, arg1.GetTypeArg(argType1), arg2.GetTypeArg(argType2),enum1,enum2,enumAs1,enumAs2 });
             }
             //judgeFunc = (Func<bool>)judgeFuncInstance.GetType().GetMethod(judgeFuncName).CreateDelegate(typeof(Func<bool>), judgeFuncInstance);
         }
@@ -141,9 +169,7 @@ namespace CUEngine.Pattern
         public UnityEngine.Object judgeFuncInstance = null; //上記のデリゲートに入れるメソッドのあるクラスのインスタンス（コンポーネント）
                                                             //次に入れ替わるステートの優先度、優先度順で移行される
         public int priority;
-#if UNITY_EDITOR
         public string comment;
-#endif
 
     }
     //引数のタイプ
@@ -155,6 +181,9 @@ namespace CUEngine.Pattern
         public float float_Arg;
         public string string_Arg;
         public bool bool_Arg;
+        public int enum_Arg;
+        public string enum_Name;
+        public string assembly_Name;
 
         public object GetTypeArg(ArgType type)
         {
@@ -170,8 +199,14 @@ namespace CUEngine.Pattern
                     return int_Arg;
                 case ArgType.String:
                     return string_Arg;
+                case ArgType.Enum:
+                    return enum_Arg;
             }
             return null;
+        }
+        public string GetEnumType()
+        {
+            return enum_Name;
         }
     }
 }

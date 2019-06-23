@@ -6,7 +6,7 @@ using CUEngine.Pattern;
 public class CommandMonobehaviour : StateMonobehavior
 {
 	[SerializeField]
-	private int graceFrame;
+	private int graceFrame = 0;
 	private int frame;
 
 	protected override void Start()

@@ -6,7 +6,7 @@ namespace CUEngine.Pattern
 {
     public abstract class StateBaseScriptMonoBehaviour : MonoBehaviour, IEventable
     {
-        public string name;
+        public string stateName;
         public virtual void FixedUpdateGame()
         {
         }
@@ -15,10 +15,6 @@ namespace CUEngine.Pattern
         }
         public virtual void UpdateGame()
         {
-        }
-        public virtual void OnDestroy()
-        {
-            UpdateManager.Instance.updateList.Remove(this);
         }
     }
 }

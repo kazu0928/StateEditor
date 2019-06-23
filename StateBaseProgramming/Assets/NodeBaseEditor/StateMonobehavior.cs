@@ -81,6 +81,10 @@ namespace CUEngine.Pattern
                     }
                 }
             }
+            if(stateProcessor.State!=null)
+            {
+                stateProcessor.Execute();
+            }
         }
         //常時処理
         public virtual void UpdateGame()
@@ -129,10 +133,6 @@ namespace CUEngine.Pattern
         }
         public virtual void FixedUpdateGame()
         {
-        }
-        private void OnDestroy()
-        {
-            UpdateManager.Instance.updateList.Remove(this);
         }
     }
 }

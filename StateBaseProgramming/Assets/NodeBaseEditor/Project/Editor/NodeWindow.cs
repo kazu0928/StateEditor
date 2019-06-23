@@ -420,6 +420,17 @@ namespace CUEngine.Pattern
                 sop.bool_Arg = EditorGUILayout.Toggle(sop.bool_Arg, GUILayout.Width(wid));
                 argType = ArgType.Bool;
             }
+            else if(infos[paramNum].ParameterType.IsEnum)
+            {
+                GUILayout.Label("Enum");
+                
+                Enum em = (Enum)infos[paramNum].ParameterType.GetField(Enum.GetName(infos[paramNum].ParameterType,sop.enum_Arg)).GetValue(null);
+                em = EditorGUILayout.EnumPopup(em);
+                sop.enum_Arg = em.GetHashCode();
+                sop.enum_Name = infos[paramNum].ParameterType.FullName;
+                sop.assembly_Name = infos[paramNum].ParameterType.Assembly.FullName;
+                argType = ArgType.Enum;
+            }
             else
             {
                 GUILayout.Label("未対応の引数です、エラーが起こります");
