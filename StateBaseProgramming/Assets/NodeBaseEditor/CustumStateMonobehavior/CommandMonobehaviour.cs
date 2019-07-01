@@ -18,18 +18,18 @@ public class CommandMonobehaviour : StateMonobehavior
 	public override void UpdateGame()
 	{
 		base.UpdateGame();
-		if (stateMove)
+		if (nowPlayStateBody.stateMove)
 		{
 			//Debug.Log(stateProcessor.State.getStateName());
 			frame = graceFrame;
 		}
-		if (stateProcessor.State != states[0])
+		if (nowPlayStateBody.stateProcessor.State != nowPlayStateBody.states[0])
 		{
 			frame--;
 		}
 		if (frame <= 0)
 		{
-			stateProcessor.State = states[0];
+			nowPlayStateBody.stateProcessor.State = nowPlayStateBody.states[0];
 		}
 	}
 }

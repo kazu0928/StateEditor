@@ -33,7 +33,11 @@ namespace CUEngine.Pattern
 
         private void WindowFunc(int id)
         {
-            Undo.RecordObject(stateMonobehavior,"StateUndo");
+            NodeColorChange();
+            if(stateMonobehavior!=null)
+            {
+                Undo.RecordObject(stateMonobehavior, "StateUndo");
+            }
             EditorGUILayout.BeginHorizontal();
             //このノードをアクティブにする
             if (Event.current.button == 0 && Event.current.type == EventType.MouseDown)
@@ -46,7 +50,7 @@ namespace CUEngine.Pattern
                 IDChangeFlag = false;
             }
             myState.toggleWindow = EditorGUILayout.Toggle(myState.toggleWindow);//このノードをポップアップして表示するか否か
-            NodeColorChange();
+
             if ((nodeActiveID != ID && NodeBaseEditor.optionAllView == false) || myState.toggleWindow == false)
             {
                 rect.height = 40;
@@ -77,6 +81,74 @@ namespace CUEngine.Pattern
             EditorGUILayout.LabelField("条件処理");
             PopupBoolMethod();
 
+        }
+        private void SubStateFunc(int id)
+        {
+            if (stateMonobehavior != null)
+            {
+                Undo.RecordObject(stateMonobehavior, "StateUndo");
+            }
+            //このノードをアクティブにする
+            if (Event.current.button == 0 && Event.current.type == EventType.MouseDown)
+            {
+                IDChangeFlag = true;
+            }
+            if (Event.current.type == EventType.Layout && IDChangeFlag)
+            {
+                nodeActiveID = id;
+                IDChangeFlag = false;
+            }
+            nowStateName = myState.stateName;
+            //ステートの名前を変更する
+            myState.stateName = EditorGUILayout.TextField(myState.stateName, GUILayout.Width(rect.width - 25));
+            NodeColorChange();
+            if (GUILayout.Button("開く"))
+            {
+                NodeBaseEditorParameter.instance.window.isSubStateEditor = true;
+                NodeBaseEditorParameter.instance.window.subStates = myState.stateBody;
+                NodeBaseEditor.initFlag = true;
+            }
+            EditorGUILayout.LabelField("条件処理");
+            //名前が変更されたら更新
+            if (nowStateName != myState.stateName)
+            {
+                NodeBaseEditor.initFlag = true;
+                nowStateName = myState.stateName;
+            }
+            //メソッド取得
+            GetDrawMethod(ref compornents, typeof(void), ref nowMethods, ref nowOptions);
+            GetDrawMethod(ref compornentsBool, typeof(bool), ref nowMethodsBool, ref nowOptionsBool);
+            //規定の高さ
+            rect.height = 45 + 57;
+            PopupBoolMethod();
+        }
+        private void EndStateFunc(int id)
+        {
+            if (stateMonobehavior != null)
+            {
+                Undo.RecordObject(stateMonobehavior, "StateUndo");
+            }
+            //このノードをアクティブにする
+            if (Event.current.button == 0 && Event.current.type == EventType.MouseDown)
+            {
+                IDChangeFlag = true;
+            }
+            if (Event.current.type == EventType.Layout && IDChangeFlag)
+            {
+                nodeActiveID = id;
+                IDChangeFlag = false;
+            }
+            nowStateName = myState.stateName;
+            //ステートの名前を変更する
+            myState.stateName = EditorGUILayout.TextField(myState.stateName, GUILayout.Width(rect.width - 25));
+            //名前が変更されたら更新
+            if (nowStateName != myState.stateName)
+            {
+                NodeBaseEditor.initFlag = true;
+                nowStateName = myState.stateName;
+            }
+            EditorGUILayout.LabelField("End State");
+            NodeColorChange();
         }
         private void PopupNonReturnStartMethod()
         {
@@ -526,13 +598,28 @@ namespace CUEngine.Pattern
             color = new Color(1, 1, 1, 0.8f);
             if (EditorApplication.isPlaying == true)
             {
-                if (stateMonobehavior.stateProcessor.State == myState)
+                if(stateMonobehavior.nowPlayStateBody.stateMove)
+                {
+                    NodeBaseEditor.initFlag = true;
+                }
+                if (stateMonobehavior.nowPlayStateBody.stateProcessor.State == myState)
                 {
                     color = new Color(1, 0, 0, 0.8f);
+                    return;
                 }
                 else
                 {
                     color = new Color(1, 1, 1, 0.8f);
+                }
+                StateBody body = stateMonobehavior.nowPlayStateBody.parant;
+                while (body != null)
+                {
+                    if (body.stateProcessor.State == myState)
+                    {
+                        color = new Color(0, 1, 0, 0.8f);
+                        return;
+                    }
+                    body = body.parant;
                 }
             }
         }

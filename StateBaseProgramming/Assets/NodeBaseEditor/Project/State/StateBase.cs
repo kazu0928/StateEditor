@@ -18,7 +18,12 @@ namespace CUEngine.Pattern
         Arg1,
         Arg2,
     }
-
+    public enum StateMode
+    {
+        Normal,
+        SubState,
+        EndState,
+    }
     [System.Serializable]
     public abstract class StateBase
     {
@@ -212,6 +217,8 @@ namespace CUEngine.Pattern
 
         //ステート名を取得するメソッド
         public abstract string getStateName();
+        public StateMode stateMode = StateMode.Normal;
+        public StateBody stateBody = new StateBody();
     }
     //通常ステート
     [System.Serializable]

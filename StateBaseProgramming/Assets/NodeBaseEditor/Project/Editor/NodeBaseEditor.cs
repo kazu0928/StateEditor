@@ -13,6 +13,10 @@ using UnityEditor;
 
 namespace CUEngine.Pattern
 {
+    public class NodeBaseEditorParameter : ScriptableSingleton<NodeBaseEditorParameter>
+    {
+        public NodeBaseEditor window = null;
+    }
     public class NodeBaseEditor : EditorWindow
     {
         private GameObject gameObject = null;//ステート管理オブジェクト
@@ -29,12 +33,15 @@ namespace CUEngine.Pattern
         private List<NodeConnection> connections;//描画する接続線
 
         private int nowId = 0;//次のノードウィンドウのID
-        public static bool optionAllView;//全て表示するか否か
+        public static bool optionAllView = true;//全て表示するか否か
         public static bool initFlag = false;//初期化用のフラグ
 
         private Vector2 offset;//
         private Vector2 drag;//キャンバスのドラッグ
         private EventType beforeEvent;
+        //SubStateを開いてるかどうか
+        public bool isSubStateEditor = false;
+        public StateBody subStates = new StateBody();//現在管理しているステート
 
         //選択中（ドラッグ中）のハンドル
         private NodeConnectionPoint selectedInPoint;
@@ -49,9 +56,9 @@ namespace CUEngine.Pattern
         [MenuItem("State/NodeEditor")]
         private static void Open()
         {
-            NodeBaseEditor window = GetWindow<NodeBaseEditor>();
-            window.autoRepaintOnSceneChange = true;//シーンが変わるたびに自動で再描画
-            window.titleContent = new GUIContent("StateNodeEditor");
+            NodeBaseEditorParameter.instance.window = GetWindow<NodeBaseEditor>();
+            NodeBaseEditorParameter.instance.window.autoRepaintOnSceneChange = true;//シーンが変わるたびに自動で再描画
+            NodeBaseEditorParameter.instance.window.titleContent = new GUIContent("StateNodeEditor");
         }
         //オブジェクトがロードされた時のコールバック
         private void OnEnable()
@@ -92,7 +99,16 @@ namespace CUEngine.Pattern
             if (nowStateMonoNuber != _beforeMonoNumber)
             {
                 initFlag = true;
+                isSubStateEditor = false;
                 _beforeMonoNumber = nowStateMonoNuber;
+            }
+            if(isSubStateEditor)
+            {
+                if(GUILayout.Button("戻る",GUILayout.Width(50)))
+                {
+                    isSubStateEditor = false;
+                    initFlag = true;
+                }
             }
 
             //イベント処理
@@ -112,6 +128,7 @@ namespace CUEngine.Pattern
                 {
                     initFlag = true;
                     nowGameObject = gameObject;
+                    isSubStateEditor = false;
                     nowStateMonoNuber = 0;
                 }
             }
@@ -130,12 +147,13 @@ namespace CUEngine.Pattern
                 }
                 initFlag = false;
                 nowGameObject = null;
+                isSubStateEditor = false;
             }
         }
         /// <summary>
         /// 初期化処理
         /// </summary>
-        private void InitState()
+        public void InitState()
         {
             EditorApplication.playModeStateChanged += OnChangedPlayMode;//プレイモードの変更時の処理
                                                                    //フラグがtrueなら起動
@@ -164,9 +182,16 @@ namespace CUEngine.Pattern
             for (int i = 0; i < stateMonobehaviors.Length; i++)
             {
                 Array.Resize(ref stateMonoOption, stateMonoOption.Length + 1);
-                stateMonoOption[i] = stateMonobehaviors[i].stateName;
+                stateMonoOption[i] = stateMonobehaviors[i].stateBody.stateName;
             }
-            states = stateMonobehaviors[nowStateMonoNuber].states;
+            if(isSubStateEditor == true)
+            {
+                states = subStates.states;
+            }
+            else
+            {
+                states = stateMonobehaviors[nowStateMonoNuber].stateBody.states;
+            }
             if (nodes == null)
             {
                 nodes = new List<Node>();
@@ -373,6 +398,8 @@ namespace CUEngine.Pattern
             genericMenu.AddItem(new GUIContent("Add node"), false, () => OnClickAddNode(mousePosition));
             genericMenu.AddItem(new GUIContent("Paste"), false, () => OnClickPasteNode(mousePosition));
             genericMenu.AddItem(new GUIContent("Paste All"), false, () => OnClickPasteNodeAll(mousePosition));
+            genericMenu.AddItem(new GUIContent("EndState"), false, () => OnClickAddEndState(mousePosition));
+            genericMenu.AddItem(new GUIContent("SubState"), false, () => OnClickAddSubState(mousePosition));
 
             //メニュー表示
             genericMenu.ShowAsContext();
@@ -387,6 +414,47 @@ namespace CUEngine.Pattern
             }
             //ノード、ステート追加
             NomalState statePlus = new NomalState();
+            statePlus.stateMode = StateMode.Normal;
+            states.Add(statePlus);
+
+            if (nodes == null)
+            {
+                nodes = new List<Node>();
+            }
+            //マウスの場所に追加
+            nodes.Add(new Node(new Rect(mousePosition.x, mousePosition.y, 200, 50), inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, " ", nowId, statePlus, gameObject, stateMonobehaviors[nowStateMonoNuber]));
+            nowId++;
+        }
+        private void OnClickAddSubState(Vector2 mousePosition)
+        {
+            //Undo処理
+            if (stateMonobehaviors.Length > 0)
+            {
+                Undo.RecordObject(stateMonobehaviors[nowStateMonoNuber], "StateUndo");
+            }
+            //ノード、ステート追加
+            NomalState statePlus = new NomalState();
+            statePlus.stateMode = StateMode.SubState;
+            states.Add(statePlus);
+
+            if (nodes == null)
+            {
+                nodes = new List<Node>();
+            }
+            //マウスの場所に追加
+            nodes.Add(new Node(new Rect(mousePosition.x, mousePosition.y, 200, 50), inPointStyle, outPointStyle, OnClickInPoint, OnClickOutPoint, OnClickRemoveNode, " ", nowId, statePlus, gameObject, stateMonobehaviors[nowStateMonoNuber]));
+            nowId++;
+        }
+        private void OnClickAddEndState(Vector2 mousePosition)
+        {
+            //Undo処理
+            if (stateMonobehaviors.Length > 0)
+            {
+                Undo.RecordObject(stateMonobehaviors[nowStateMonoNuber], "StateUndo");
+            }
+            //ノード、ステート追加
+            NomalState statePlus = new NomalState();
+            statePlus.stateMode = StateMode.EndState;
             states.Add(statePlus);
 
             if (nodes == null)
@@ -413,6 +481,8 @@ namespace CUEngine.Pattern
             statePlus.execDelegate = new List<StateBase.ActionDelegate>(copyNode.myState.execDelegate);
             statePlus.stateName = copyNode.myState.stateName + "(Clone)";
             statePlus.nextStateJudge = new List<NextStateJudge>();
+            statePlus.stateMode = copyNode.myState.stateMode;
+            statePlus.stateBody = copyNode.myState.stateBody;
             for (int i = 0; i < copyNode.myState.nextStateJudge.Count; i++)
             {
                 NextStateJudge next = new NextStateJudge();
@@ -454,6 +524,8 @@ namespace CUEngine.Pattern
             statePlus.execDelegate = new List<StateBase.ActionDelegate>(copyNode.myState.execDelegate);
             statePlus.stateName = copyNode.myState.stateName + "(Clone)";
             statePlus.nextStateJudge = new List<NextStateJudge>();
+            statePlus.stateMode = copyNode.myState.stateMode;
+            statePlus.stateBody = copyNode.myState.stateBody;
             for (int i = 0; i < copyNode.myState.nextStateJudge.Count; i++)
             {
                 NextStateJudge next = new NextStateJudge();
@@ -629,6 +701,7 @@ namespace CUEngine.Pattern
         {
             if (isNowPlayng == PlayModeStateChange.EnteredPlayMode)
             {
+                isSubStateEditor = false;
                 initFlag = true;
             }
             if (isNowPlayng == PlayModeStateChange.ExitingPlayMode)

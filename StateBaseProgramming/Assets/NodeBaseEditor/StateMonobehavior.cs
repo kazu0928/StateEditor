@@ -16,27 +16,63 @@ namespace CUEngine.Pattern
 {
     public class StateMonobehavior : MonoBehaviour, IEventable
     {
+        //現在処理中の本体
+        public StateBody stateBody = new StateBody();
+        public StateBody nowPlayStateBody{ get;set; }
+
+        protected virtual void Awake() 
+        {
+            nowPlayStateBody = stateBody;
+            nowPlayStateBody.AwakeInit();
+        }
+        protected virtual void Start() 
+        {
+            UpdateManager.Instance.AddUpdate(this);
+            nowPlayStateBody.StartInit(this);
+        }
+        public virtual void UpdateGame()
+        {
+            nowPlayStateBody.UpdateGame();
+        }
+        //インターフェースを継承しているのでおいておくだけ
+        public virtual void LateUpdateGame()
+        {
+        }
+        public virtual void FixedUpdateGame()
+        {
+        }
+    }
+    [System.Serializable]
+    //ステート本体
+    public class StateBody
+    {
+        public StateBody parant = null;
+        private StateMonobehavior mono = null;
         //名前
         public string stateName;
 
         //変更前のステート名
         private string _beforeStateName;
 
-        protected bool stateMove = false;
+        public bool stateMove = false;
 
-        //ステート本体（プロセッサ）
+        //ステート（プロセッサ）
         public StateProcessor stateProcessor = new StateProcessor();
         //使用するすべてのステート
         public List<NomalState> states = new List<NomalState>();
 
         //TODO:DictionaryではなくIDで管理する//OK
-        //ステートを名前で管理する辞書
         private Dictionary<int, NomalState> stateDictionary = new Dictionary<int, NomalState>();
-
-        protected virtual void Awake()
+        //全部初期化
+        public void AwakeInit()
         {
             foreach (NomalState state in states)
             {
+                //サブステートの初期化
+                if(state.stateMode == StateMode.SubState)
+                {
+                    state.stateBody.AwakeInit();
+                }
                 foreach (NextStateJudge judge in state.nextStateJudge)
                 {
                     judge.Init();
@@ -48,17 +84,28 @@ namespace CUEngine.Pattern
             }
         }
         //初期化処理
-        protected virtual void Start()
+        public void StartInit(StateMonobehavior mono)
         {
-            UpdateManager.Instance.AddUpdate(this);//アップデートリストに追加
-                                                   //ステートがあれば処理
+            this.mono = mono;
+            //ステートがあれば処理
             if (states.Count > 0)
             {
                 //0がスタートステート
                 stateProcessor.State = states[0];//ステート0をスタートステートに
                                                  //ステートの中身のアップデートデリゲートに登録
+                //最初がSubStateだったら
+                if(states[0].stateMode == StateMode.SubState)
+                {
+                    mono.nowPlayStateBody = states[0].stateBody;
+                }
                 foreach (NomalState ns in states)
                 {
+                    //サブステートの処理
+                    if(ns.stateMode == StateMode.SubState)
+                    {
+                        ns.stateBody.StartInit(mono);
+                        ns.stateBody.SetParant(this);
+                    }
                     ns.updateJudgeDelegate = NomalStateJudge;   //判定
                     stateDictionary.Add(ns.ID.number, ns);//辞書追加
                     ns.nextStateJudge.Sort((a, b) => b.priority - a.priority);//優先度順にソート(高ければ高い、降順)
@@ -81,7 +128,8 @@ namespace CUEngine.Pattern
                     }
                 }
             }
-            if (stateProcessor.State != null)
+            //入った時の処理
+            if ((stateProcessor.State != null)&&(mono.nowPlayStateBody == this))
             {
                 stateProcessor.Execute();
             }
@@ -108,7 +156,7 @@ namespace CUEngine.Pattern
             }
         }
         /// <summary>
-        /// 判定処理、現在のステートの中身から判定処理を実行
+        /// 判定処理、現在のステートの中身から判定処理を実行(delegate)
         /// </summary>
         public void NomalStateJudge()
         {
@@ -124,15 +172,27 @@ namespace CUEngine.Pattern
                 {
                     stateProcessor.State = judge.nextState;
                     stateMove = true;
+                    if(judge.nextState.stateMode == StateMode.SubState)
+                    {
+                        mono.nowPlayStateBody = judge.nextState.stateBody;
+                        judge.nextState.stateBody.stateProcessor.State = judge.nextState.stateBody.states[0];
+                        judge.nextState.stateBody.stateMove = true;
+                    }
+                    else if(judge.nextState.stateMode == StateMode.EndState)
+                    {
+                        if(parant != null)
+                        {
+                            mono.nowPlayStateBody = parant;
+                            mono.nowPlayStateBody.stateProcessor.PlayUpdate();
+                        }
+                    }
                 }
             }
         }
-        //インターフェースを継承しているのでおいておくだけ
-        public virtual void LateUpdateGame()
+        //親のセット
+        public void SetParant(StateBody parant)
         {
-        }
-        public virtual void FixedUpdateGame()
-        {
+            this.parant = parant;
         }
     }
 }

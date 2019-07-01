@@ -145,7 +145,6 @@ namespace CUEngine.Pattern
                 //delegate作成
                 type.GetMethod("Init").Invoke(judgeFunc, new object[] { judgeFuncInstance, judgeFuncName, arg1.GetTypeArg(argType1), arg2.GetTypeArg(argType2),enum1,enum2,enumAs1,enumAs2 });
             }
-            //judgeFunc = (Func<bool>)judgeFuncInstance.GetType().GetMethod(judgeFuncName).CreateDelegate(typeof(Func<bool>), judgeFuncInstance);
         }
         //次に入れ替わることの出来るステートの名前
         public string nextStateName;

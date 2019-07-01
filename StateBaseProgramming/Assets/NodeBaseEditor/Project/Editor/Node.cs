@@ -54,6 +54,7 @@ namespace CUEngine.Pattern
 
         public Color color = Color.white;
 
+
         /// <summary>
         /// 初期化
         /// </summary>
@@ -77,6 +78,7 @@ namespace CUEngine.Pattern
             this.title = title;
             ID = id;
             myState = nomalS;
+            
             gameObject = game;
             stateMonobehavior = monobehavior;
             //出力ポイント
@@ -108,11 +110,34 @@ namespace CUEngine.Pattern
             GUI.backgroundColor = color;
             if (ID == 0)
             {
-                rect = GUI.Window(ID, rect, WindowFunc, "START::" + title);//windowベースで描画
+                if(myState.stateMode == StateMode.SubState)
+                {
+                    rect = GUI.Window(ID, rect, SubStateFunc, "START::" + title);//windowベースで描画
+
+                }
+                else if(myState.stateMode == StateMode.EndState)
+                {
+                    rect = GUI.Window(ID, new Rect(rect.x, rect.y, 200, 80), EndStateFunc, "START::" + title);//windowベースで描画
+                }
+                else
+                {
+                    rect = GUI.Window(ID, rect, WindowFunc, "START::" + title);//windowベースで描画
+                }
             }
             else
             {
-                rect = GUI.Window(ID, rect, WindowFunc, title);//windowベースで描画
+                if (myState.stateMode == StateMode.SubState)
+                {
+                    rect = GUI.Window(ID, rect, SubStateFunc, title);//windowベースで描画
+                }
+                else if (myState.stateMode == StateMode.EndState)
+                {
+                    rect = GUI.Window(ID, new Rect(rect.x, rect.y, 200, 80), EndStateFunc, title);//windowベースで描画
+                }
+                else
+                {
+                    rect = GUI.Window(ID, rect, WindowFunc, title);//windowベースで描画
+                }
             }
             GUI.backgroundColor = Color.white;
             myState.nodePosition = rect.position;//ポジションのセーブ
@@ -216,9 +241,15 @@ namespace CUEngine.Pattern
         {
             GenericMenu genericMenu = new GenericMenu();
             genericMenu.AddItem(new GUIContent("Remove node"), false, OnClickRemoveNode);
-            genericMenu.AddItem(new GUIContent("条件式追加"), false, OnClickPlusUpdateJudge);
-            genericMenu.AddItem(new GUIContent("常時実行処理追加"), false, OnClickPlusUpdate);
-            genericMenu.AddItem(new GUIContent("移行時処理追加"), false, OnClickPlusStart);
+            if (myState.stateMode != StateMode.EndState)
+            {
+                genericMenu.AddItem(new GUIContent("条件式追加"), false, OnClickPlusUpdateJudge);
+            }
+            if (myState.stateMode == StateMode.Normal)
+            {
+                genericMenu.AddItem(new GUIContent("常時実行処理追加"), false, OnClickPlusUpdate);
+                genericMenu.AddItem(new GUIContent("移行時処理追加"), false, OnClickPlusStart);
+            }
             genericMenu.AddItem(new GUIContent("コピー"), false, OnClickCopy);
             genericMenu.ShowAsContext();
         }
