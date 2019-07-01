@@ -177,6 +177,7 @@ namespace CUEngine.Pattern
                         mono.nowPlayStateBody = judge.nextState.stateBody;
                         judge.nextState.stateBody.stateProcessor.State = judge.nextState.stateBody.states[0];
                         judge.nextState.stateBody.stateMove = true;
+                        mono.nowPlayStateBody.stateProcessor.Execute();
                     }
                     else if(judge.nextState.stateMode == StateMode.EndState)
                     {

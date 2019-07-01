@@ -270,13 +270,13 @@ MonoBehaviour:
         stateName: 
         stateMove: 0
         states: []
-    - stateName: 
+    - stateName: sad
       ID:
         number: 2
       nextStateJudge: []
       execDelegate: []
       playUpdateDelegate: []
-      nodePosition: {x: 854, y: 268}
+      nodePosition: {x: 922, y: 280}
       toggleWindow: 1
       stateMode: 0
       stateBody:
@@ -287,7 +287,7 @@ MonoBehaviour:
       ID:
         number: 3
       nextStateJudge:
-      - nextStateName: 
+      - nextStateName: sad
         nextID:
           number: 2
         arg1:
@@ -316,7 +316,7 @@ MonoBehaviour:
         judgeFuncInstance: {fileID: 178371315}
         priority: 0
         comment: 
-      - nextStateName: 
+      - nextStateName: sad
         nextID:
           number: 2
         arg1:
@@ -347,7 +347,7 @@ MonoBehaviour:
         comment: 
       execDelegate: []
       playUpdateDelegate: []
-      nodePosition: {x: 523, y: 237}
+      nodePosition: {x: 477, y: 233}
       toggleWindow: 1
       stateMode: 1
       stateBody:
@@ -387,9 +387,33 @@ MonoBehaviour:
             judgeFuncInstance: {fileID: 178371315}
             priority: 0
             comment: 
-          execDelegate: []
+          execDelegate:
+          - actionName: StringDebugDraw
+            instance: {fileID: 178371315}
+            arg1:
+              object_Arg: {fileID: 0}
+              int_Arg: 0
+              float_Arg: 0
+              string_Arg: sada
+              bool_Arg: 0
+              enum_Arg: 0
+              enum_Name: 
+              assembly_Name: 
+            arg2:
+              object_Arg: {fileID: 0}
+              int_Arg: 0
+              float_Arg: 0
+              string_Arg: 
+              bool_Arg: 0
+              enum_Arg: 0
+              enum_Name: 
+              assembly_Name: 
+            argMode: 1
+            argType1: 3
+            argType2: 0
+            comment: 
           playUpdateDelegate: []
-          nodePosition: {x: 149, y: 289}
+          nodePosition: {x: 279, y: 275}
           toggleWindow: 1
           stateMode: 0
           stateBody:
