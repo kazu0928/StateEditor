@@ -168,10 +168,16 @@ namespace CUEngine.Pattern
                 {
                     continue;
                 }
+                
                 if (judge.judgeFunc.Invoke())
                 {
+                    if (mono.nowPlayStateBody != this)
+                    {
+                        mono.nowPlayStateBody = this;
+                    }
                     stateProcessor.State = judge.nextState;
                     stateMove = true;
+                    //サブステート有の場合
                     if(judge.nextState.stateMode == StateMode.SubState)
                     {
                         mono.nowPlayStateBody = judge.nextState.stateBody;
@@ -188,6 +194,12 @@ namespace CUEngine.Pattern
                         }
                     }
                 }
+            }
+            StateBody pa = parant;
+            while(pa!=null)
+            {
+                pa.stateProcessor.PlayUpdate();
+                pa = pa.parant;
             }
         }
         //親のセット
